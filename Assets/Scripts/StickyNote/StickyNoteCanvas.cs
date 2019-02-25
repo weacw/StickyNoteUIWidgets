@@ -8,22 +8,55 @@ using Unity.UIWidgets.painting;
 using Unity.UIWidgets.ui;
 using Unity.UIWidgets.widgets;
 using UnityEngine;
+using Color = Unity.UIWidgets.ui.Color;
 using TextStyle = Unity.UIWidgets.painting.TextStyle;
 
 public class StickyNoteCanvas : WidgetCanvas
 {
     protected override Widget getWidget()
     {
-        return new StickyNoteStatefulWidget();
+        return new StickyNoteWriterViewStatefulWidget();
     }
     protected override void OnEnable()
     {
         base.OnEnable();
         FontManager.instance.addFont(Resources.Load<Font>(path: "Material-Design-Iconic-Font"));
     }
+
+    // protected override string initialRoute { get { return "/"; } }
+    protected override Dictionary<string, WidgetBuilder> routes
+    {
+        get
+        {
+            return new Dictionary<string, WidgetBuilder>
+            {
+                {"/",(context)=>new StickyNoteStatefulWidget() },
+                {"ARView",(context)=>new StickyNoteARViewStatefulWidget() }
+
+            };
+        }
+    }
+
+    protected override PageRouteFactory pageRouteBuilder
+    {
+        get
+        {
+            return (RouteSettings settings, WidgetBuilder builder) => new PageRouteBuilder(
+                settings: settings,
+                pageBuilder: (BuildContext context,
+                              Unity.UIWidgets.animation.Animation<double> animation,
+                              Unity.UIWidgets.animation.Animation<double> secondaryAnimation) => builder(context),
+                transitionsBuilder: (BuildContext context,
+                              Unity.UIWidgets.animation.Animation<double> animation,
+                              Unity.UIWidgets.animation.Animation<double> secondaryAnimation, Widget child) =>
+                new _FadeUpwardsPageTransition(
+                                                routeAnimation: animation,
+                                                child: child)
+                );
+        }
+    }
 }
-
-
+#region StickyNote main view
 public class StickyNoteStatefulWidget : StatefulWidget
 {
     public StickyNoteStatefulWidget(Key key = null) : base(key)
@@ -60,7 +93,7 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
     {
         return new Container(
                 padding: EdgeInsets.only(left: 20, top: 128),
-                child: new Text("StickyNote Scenes", style: new TextStyle(fontSize: 20.0,fontWeight:FontWeight.w700))
+                child: new Text("StickyNote Scenes", style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700))
             );
     }
 
@@ -68,7 +101,10 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
     private Widget _buildBody(BuildContext context)
     {
         return new NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification notification) => { return true; },
+                onNotification: (ScrollNotification notification) =>
+                {
+                    return true;
+                },
                 child: new Flexible(
                         child: new ListView(
                                 physics: new AlwaysScrollableScrollPhysics(),
@@ -85,60 +121,29 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
     private Widget _buildFooter(BuildContext context)
     {
         return new Container(
-            padding: EdgeInsets.only(left:300),
-            height:50,                     
-            width:Screen.width,
-            child: new Container(
-                child:new Icon(icon:Icons.test,size:30)
-                )
-            );        
+            padding: EdgeInsets.only(250),
+            height: 50,
+            width: Screen.width,
+            child: new GestureDetector(
+                       onTap: () => { Debug.Log("Write"); },
+                       child: new Icon(icon: Icons.write, size: 30)
+                    )
+            );
     }
 
     private Widget _buildRowList(BuildContext context)
     {
         return new Container(
-                padding:EdgeInsets.only(top:30),
-                child:new Column(
-                        children:new List<Widget>
+                padding: EdgeInsets.only(top: 30),
+                child: new Column(
+                        children: new List<Widget>
                         {
                              new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-    }
+                        }
                     )
             );
     }
 }
-
-
 
 class ItemArticle : StatelessWidget
 {
@@ -154,7 +159,12 @@ class ItemArticle : StatelessWidget
 
     public override Widget build(BuildContext context)
     {
-        return new Container(
+        return new GestureDetector(
+            onTap: () =>
+            {
+                Navigator.pushName(context, "ARView");
+            },
+            child: new Container(
             padding: EdgeInsets.only(left: 22),
             height: 80,
             child: new Column(
@@ -164,15 +174,171 @@ class ItemArticle : StatelessWidget
                             width:Screen.width,
                             child:new Text(title,style:new TextStyle(fontSize:18))),
                         new Container(
-                          //  margin:EdgeInsets.only(top:10),
+                            margin:EdgeInsets.only(top:10),
                             width:Screen.width,
                             child:new Text(date,style:new TextStyle(fontSize:10))),
                         new Divider(height:16)
                     }
                 )
+            )
+            );
+    }
+
+    private void TESTdebug(string str)
+    {
+        Debug.Log(str);
+    }
+}
+#endregion
+
+
+#region StickyNote AR view
+public class StickyNoteARViewStatefulWidget : StatefulWidget
+{
+    public StickyNoteARViewStatefulWidget(Key key = null) : base(key)
+    {
+    }
+
+    public override State createState()
+    {
+        return new StickyNoteARViewState();
+    }
+}
+
+public class StickyNoteARViewState : State<StickyNoteARViewStatefulWidget>
+{
+    public override Widget build(BuildContext context)
+    {
+        return new Container(
+            child: new Column(
+                children: new List<Widget>
+                    {
+                      this._buidHeader(context),
+                      this._buildFooter(context),
+
+                    }
+                )
+            );
+    }
+
+
+
+    private Widget _buidHeader(BuildContext context)
+    {
+        return new Container(
+                width: Screen.width,
+                padding: EdgeInsets.only(left: -260, top: 70),
+                child: new GestureDetector(
+                    onTap: () =>
+                    {
+                        Navigator.pop(context);
+                    },
+                    child: new Icon(icon: Icons.back, size: 30)
+                )
+            );
+    }
+
+    private Widget _buildFooter(BuildContext context)
+    {
+        return new Container(
+                    margin: EdgeInsets.only(top: 450),
+                    child: new GestureDetector(
+                        onTap: () => { Debug.Log("Place object"); },
+                        child: new Icon(icon: Icons.place, size: 50)
+                        )
+                   );
+    }
+}
+#endregion
+
+
+
+#region StickyNote Writer view
+public class StickyNoteWriterViewStatefulWidget : StatefulWidget
+{
+    public StickyNoteWriterViewStatefulWidget(Key key = null) : base(key)
+    {
+    }
+
+    public override State createState()
+    {
+        return new StickyNoteWriterViewState();
+    }
+}
+
+public class StickyNoteWriterViewState : State<StickyNoteWriterViewStatefulWidget>
+{
+    TextEditingController descController = new TextEditingController("");
+
+    public StickyNoteWriterViewState()
+    {
+    }
+
+    public override Widget build(BuildContext context)
+    {
+        var container = new Container(
+            color: CLColors.background3,
+            child: new Column(
+                    crossAxisAlignment: Unity.UIWidgets.rendering.CrossAxisAlignment.start,
+                    children: new List<Widget>
+                    {
+                        this._buildHeader(context),
+                        this._buildInputArea(context)
+
+                    }
+                )
+            );
+        return container;
+    }
+
+
+    private Widget _buildHeader(BuildContext context)
+    {
+        return new Container(
+
+              child:new Flexible(child: new Column(
+                  children: new List<Widget>
+                          {
+
+                             new Container(
+                               //     margin: EdgeInsets.only(right: 188, top: 20),
+                                    padding:EdgeInsets.only(left:20,top:128),
+                                    child:new Text("Writting", style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700))
+                                 ),
+                          }
+                  ))
+          );
+    }
+
+    private Widget _buildInputArea(BuildContext context)
+    {
+        return new Container(
+                child: new Column(
+                        children: new List<Widget>
+                        {
+                            new Flexible(child:new Container(
+                                    height:400,
+                                    margin:EdgeInsets.all(15),
+                                    decoration:new BoxDecoration(border:Border.all(new Color(0xFF000000),1)),
+                                    child:new EditableText(maxLines:20,
+                                        controller:this.descController,
+                                        selectionControls:MaterialUtils.materialTextSelectionControls,
+                                        focusNode:new FocusNode(),
+                                        style:new TextStyle(
+                                                fontSize:15,
+                                                height:1.5f,
+                                                color:new Color(0xFF1389FD)
+                                            ),
+                                        selectionColor:Color.fromARGB(255,255,0,0),
+                                        cursorColor:Color.fromARGB(255,0,0,0))                                    
+                                    )
+                                )
+                        }
+                    )
             );
     }
 }
+#endregion
 
 public class CustomButton : StatelessWidget
 {
@@ -209,9 +375,43 @@ public class CustomButton : StatelessWidget
 }
 public static class Icons
 {
-    public static readonly IconData notifications = new IconData(0x00ae, fontFamily: "Material Icons");
-    public static readonly IconData account_circle = new IconData(0x00b6, fontFamily: "Material Icons");
-    public static readonly IconData search = new IconData(0xe8b6, fontFamily: "Material Icons");
-    public static readonly IconData keyboard_arrow_down = new IconData(0xe313, fontFamily: "Material Icons");
-    public static readonly IconData test = new IconData(0xf158, fontFamily: "Material-Design-Iconic-Font");
+    public static readonly IconData write = new IconData(0xf158, fontFamily: "Material-Design-Iconic-Font");
+    public static readonly IconData back = new IconData(0x2039, fontFamily: "Material-Design-Iconic-Font");
+    public static readonly IconData place = new IconData(0x2609, fontFamily: "Material-Design-Iconic-Font");
+}
+class _FadeUpwardsPageTransition : StatelessWidget
+{
+    internal _FadeUpwardsPageTransition(
+        Key key = null,
+        Unity.UIWidgets.animation.Animation<double> routeAnimation = null, // The route's linear 0.0 - 1.0 animation.
+        Widget child = null
+    ) : base(key: key)
+    {
+        this._positionAnimation = _bottomUpTween.chain(_fastOutSlowInTween).animate(routeAnimation);
+        this._opacityAnimation = _easeInTween.animate(routeAnimation);
+        this.child = child;
+    }
+
+    static Unity.UIWidgets.animation.Tween<Offset> _bottomUpTween = new Unity.UIWidgets.animation.OffsetTween(
+        begin: new Offset(0.0, 0.25),
+        end: Offset.zero
+    );
+
+    static Unity.UIWidgets.animation.Animatable<double> _fastOutSlowInTween = new Unity.UIWidgets.animation.CurveTween(curve: Unity.UIWidgets.animation.Curves.fastOutSlowIn);
+    static Unity.UIWidgets.animation.Animatable<double> _easeInTween = new Unity.UIWidgets.animation.CurveTween(curve: Unity.UIWidgets.animation.Curves.easeIn);
+
+    readonly Unity.UIWidgets.animation.Animation<Offset> _positionAnimation;
+    readonly Unity.UIWidgets.animation.Animation<double> _opacityAnimation;
+    public readonly Widget child;
+
+    public override Widget build(BuildContext context)
+    {
+        return new SlideTransition(
+            position: this._positionAnimation,
+            child: new FadeTransition(
+                opacity: this._opacityAnimation,
+                child: this.child
+            )
+        );
+    }
 }
