@@ -31,8 +31,8 @@ public class StickyNoteCanvas : WidgetCanvas
             return new Dictionary<string, WidgetBuilder>
             {
                 {"/",(context)=>new StickyNoteStatefulWidget() },
-                {"ARView",(context)=>new StickyNoteARViewStatefulWidget() }
-
+                {"ARView",(context)=>new StickyNoteARViewStatefulWidget() },
+                {"WriteView",(context)=>new StickyNoteWriterViewStatefulWidget() }
             };
         }
     }
@@ -109,7 +109,7 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
     {
         return new Flexible(
                         child: new Container(
-                                padding:EdgeInsets.only(top:30),
+                                padding: EdgeInsets.only(top: 30),
                                 child: new ListView(
                                     physics: new AlwaysScrollableScrollPhysics(),
                                     children: rows
@@ -126,7 +126,7 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
             height: 50,
             width: Screen.width,
             child: new GestureDetector(
-                       onTap: () => { Debug.Log("Write"); },
+                       onTap: () => { Navigator.pushName(context, "WriteView"); },
                        child: new Icon(icon: Icons.write, size: 30)
                     )
             );
@@ -138,7 +138,7 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
         ItemList tmp = new ItemList();
         for (int i = 0; i < 20; i++)
         {
-            tmp.tmp.Add(new Item("Item " + i,System.DateTime.Now.ToShortDateString()));
+            tmp.tmp.Add(new Item("Item " + i, System.DateTime.Now.ToShortDateString()));
         }
 
         string json = JsonUtility.ToJson(tmp);
@@ -303,17 +303,19 @@ public class StickyNoteWriterViewState : State<StickyNoteWriterViewStatefulWidge
     private Widget _buildHeader(BuildContext context)
     {
         return new Container(
-
-              child: new Flexible(child: new Column(
+              child: new Column(
                   children: new List<Widget>
                           {
-
-                             new Container(
-                                    padding:EdgeInsets.only(left:20,top:128),
+                                new Container(
+                                    margin:EdgeInsets.only(left:250,top:50),
+                                    child:new Text("Finished", style: new TextStyle(fontSize: 15,color:CLColors.blue))
+                                 ),
+                             new Container(                                 
+                                    margin:EdgeInsets.only(left:-140,top:78),
                                     child:new Text("Writting", style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700))
                                  ),
                           }
-                  ))
+                  )
           );
     }
 
@@ -404,7 +406,7 @@ class _FadeUpwardsPageTransition : StatelessWidget
         end: Offset.zero
     );
 
-    static Unity.UIWidgets.animation.Animatable<double> _fastOutSlowInTween = new Unity.UIWidgets.animation.CurveTween(curve: Unity.UIWidgets.animation.Curves.fastOutSlowIn);
+    static Unity.UIWidgets.animation.Animatable<double> _fastOutSlowInTween = new Unity.UIWidgets.animation.CurveTween(curve: Unity.UIWidgets.animation.Curves.easeOut);
     static Unity.UIWidgets.animation.Animatable<double> _easeInTween = new Unity.UIWidgets.animation.CurveTween(curve: Unity.UIWidgets.animation.Curves.easeIn);
 
     readonly Unity.UIWidgets.animation.Animation<Offset> _positionAnimation;
@@ -429,7 +431,7 @@ public class Item
 {
     public string title;
     public string date;
-    public Item(string item,string date)
+    public Item(string item, string date)
     {
         this.title = item;
         this.date = date;
