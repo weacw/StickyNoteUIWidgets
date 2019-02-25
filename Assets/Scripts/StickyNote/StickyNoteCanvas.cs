@@ -13,17 +13,17 @@ using TextStyle = Unity.UIWidgets.painting.TextStyle;
 
 public class StickyNoteCanvas : WidgetCanvas
 {
-    protected override Widget getWidget()
-    {
-        return new StickyNoteWriterViewStatefulWidget();
-    }
+    //protected override Widget getWidget()
+    //{
+    //    return new StickyNoteWriterViewStatefulWidget();
+    //}
     protected override void OnEnable()
     {
         base.OnEnable();
         FontManager.instance.addFont(Resources.Load<Font>(path: "Material-Design-Iconic-Font"));
     }
 
-    // protected override string initialRoute { get { return "/"; } }
+    protected override string initialRoute { get { return "/"; } }
     protected override Dictionary<string, WidgetBuilder> routes
     {
         get
@@ -71,6 +71,13 @@ public class StickyNoteStatefulWidget : StatefulWidget
 
 public class StickyNoteState : State<StickyNoteStatefulWidget>
 {
+    public List<Widget> rows = new List<Widget>();
+
+    public override void initState()
+    {
+        base.initState();
+        _getData();
+    }
     public override Widget build(BuildContext context)
     {
         var container = new Container(
@@ -100,21 +107,15 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
 
     private Widget _buildBody(BuildContext context)
     {
-        return new NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification notification) =>
-                {
-                    return true;
-                },
-                child: new Flexible(
-                        child: new ListView(
-                                physics: new AlwaysScrollableScrollPhysics(),
-                                children: new List<Widget>
-                                {
-                                    this._buildRowList(context)
-                                }
+        return new Flexible(
+                        child: new Container(
+                                padding:EdgeInsets.only(top:30),
+                                child: new ListView(
+                                    physics: new AlwaysScrollableScrollPhysics(),
+                                    children: rows
+                                )
                             )
-                    )
-            );
+                    );
     }
 
 
@@ -131,20 +132,26 @@ public class StickyNoteState : State<StickyNoteStatefulWidget>
             );
     }
 
-    private Widget _buildRowList(BuildContext context)
-    {
-        return new Container(
-                padding: EdgeInsets.only(top: 30),
-                child: new Column(
-                        children: new List<Widget>
-                        {
-                             new ItemArticle("My test app "+Random.Range(1,10000), "2019-02-22"),
-                        }
-                    )
-            );
-    }
-}
 
+    private void _getData()
+    {
+        ItemList tmp = new ItemList();
+        for (int i = 0; i < 20; i++)
+        {
+            tmp.tmp.Add(new Item("Item " + i,System.DateTime.Now.ToShortDateString()));
+        }
+
+        string json = JsonUtility.ToJson(tmp);
+
+        tmp = JsonUtility.FromJson<ItemList>(json);
+        Debug.Log(tmp.tmp.Count);
+        foreach (var item in tmp.tmp)
+        {
+            rows.Add(new ItemArticle(item.title, item.date));
+        }
+    }
+
+}
 class ItemArticle : StatelessWidget
 {
     public string title;
@@ -189,6 +196,7 @@ class ItemArticle : StatelessWidget
         Debug.Log(str);
     }
 }
+
 #endregion
 
 
@@ -296,12 +304,11 @@ public class StickyNoteWriterViewState : State<StickyNoteWriterViewStatefulWidge
     {
         return new Container(
 
-              child:new Flexible(child: new Column(
+              child: new Flexible(child: new Column(
                   children: new List<Widget>
                           {
 
                              new Container(
-                               //     margin: EdgeInsets.only(right: 188, top: 20),
                                     padding:EdgeInsets.only(left:20,top:128),
                                     child:new Text("Writting", style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700))
                                  ),
@@ -330,7 +337,7 @@ public class StickyNoteWriterViewState : State<StickyNoteWriterViewStatefulWidge
                                                 color:new Color(0xFF1389FD)
                                             ),
                                         selectionColor:Color.fromARGB(255,255,0,0),
-                                        cursorColor:Color.fromARGB(255,0,0,0))                                    
+                                        cursorColor:Color.fromARGB(255,0,0,0))
                                     )
                                 )
                         }
@@ -414,4 +421,22 @@ class _FadeUpwardsPageTransition : StatelessWidget
             )
         );
     }
+}
+
+
+[System.Serializable]
+public class Item
+{
+    public string title;
+    public string date;
+    public Item(string item,string date)
+    {
+        this.title = item;
+        this.date = date;
+    }
+}
+[System.Serializable]
+public class ItemList
+{
+    public List<Item> tmp = new List<Item>();
 }
